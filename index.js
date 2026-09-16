@@ -37,19 +37,20 @@
   const toast = document.getElementById("toast");
 
   // ---------- State ----------
+  const MIN_SCALE = 0.25;
+  const MAX_SCALE = 4;
+  const SCALE_STEP = 0.15;
+  const DEFAULT_SCALE = 1.05; // starting zoom for a newly opened document
+
   const state = {
     pdf: null,
     pageNum: 1,
     numPages: 0,
-    scale: 1,
+    scale: DEFAULT_SCALE,
     baseWidth: 0, // unscaled width of the current page at scale 1
     renderTask: null,
-    fitMode: true, // true until the user manually zooms
+    fitMode: false, // stays off until the user clicks "Fit width"
   };
-
-  const MIN_SCALE = 0.25;
-  const MAX_SCALE = 4;
-  const SCALE_STEP = 0.15;
 
   // ---------- Helpers ----------
   let toastTimer = null;
@@ -65,10 +66,7 @@
 
   function setLoading(isLoading, text) {
     loadingState.hidden = !isLoading;
-
-    if (text) {
-      loadingText.textContent = text;
-    }
+    if (text) loadingText.textContent = text;
   }
 
   function availableWidth() {
@@ -93,7 +91,8 @@
       state.pdf = pdf;
       state.numPages = pdf.numPages;
       state.pageNum = 1;
-      state.fitMode = true;
+      state.scale = DEFAULT_SCALE;
+      state.fitMode = false;
 
       pageCount.textContent = String(pdf.numPages);
       pageInput.value = "1";
